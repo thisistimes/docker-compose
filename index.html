@@ -388,4 +388,715 @@ volumes:
       <h3 class="acc-section">🧹 ล้าง/เริ่มใหม่</h3>
       <div class="accordion">
         <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>หยุด service แต่ไม่ลบ</b><small>พัก container ไว้ก่อน</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose stop</code><p>หยุด container ทั้งหมดไว้เฉย ๆ ยังไม่ลบ container และ volume ยังอยู่</p><div class="when">ใช้เมื่อ: อยากพักระบบทั้งชุดไว้ก่อน แล้วอาจกลับมา start ต่อ</div></div></div>
-        <div class="acc-item"><button class="acc-head" oncli... (52 KB left)
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>หยุดแค่บาง service</b><small>เช่นหยุด API หรือ DB อย่างเดียว</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose stop api
+docker compose stop db
+docker compose stop frontend</code><p>หยุดเฉพาะ service ที่ระบุ โดย container อื่นยังทำงานต่อได้ ใน simulator ใช้ <code>db</code> เป็นชื่อย่อแทน database ที่เลือกอยู่ เช่น MongoDB/PostgreSQL/MySQL/Redis</p><div class="when">ใช้เมื่อ: อยากทดสอบว่าถ้า API หรือ database ดับ ระบบจะแสดงผลอย่างไร</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>เปิด service ที่เคยหยุด</b><small>เปิด container เดิมกลับมา</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose start</code><p>เปิด container เดิมที่เคย stop ไว้ โดยไม่ build ใหม่</p><div class="when">ใช้เมื่อ: เคย stop แล้วอยากเปิดต่อเร็ว ๆ</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ล้างรวมข้อมูล DB ด้วย</b><small>ระวัง ข้อมูล database จะหาย</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose down -v</code><p><b>-v</b> คือ remove volumes ลบข้อมูลที่ database เก็บไว้ด้วย</p><div class="when">ใช้เมื่อ: อยากเริ่มฐานข้อมูลใหม่จากศูนย์</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>build image อย่างเดียว</b><small>ยังไม่เปิด container</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose build</code><p>สร้าง image ใหม่ แต่ยังไม่เปิด container</p><div class="when">ใช้เมื่อ: อยากเช็กว่า Dockerfile build ผ่านไหม</div></div></div>
+      </div>
+
+      <h3 class="acc-section">🧰 Docker ทั่วไป</h3>
+      <div class="accordion">
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ดู container ทั้งหมด</b><small>รวมทั้ง running และ stopped</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker ps -a</code><p>แสดง container ทั้งหมดในเครื่อง ไม่ได้จำกัดแค่โปรเจกต์นี้</p><div class="when">ใช้เมื่อ: หา container ที่ค้างอยู่หรือชื่อซ้ำ</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ดู image ในเครื่อง</b><small>เช็ก image ที่ build/pull มาแล้ว</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker images</code><p>แสดง image ที่ถูก build หรือ pull มาเก็บไว้ในเครื่อง เปรียบเหมือน “ต้นแบบ” ที่ใช้สร้าง container เช่น <code>node:20-alpine</code>, <code>postgres:16</code>, หรือ image ของ API ที่เรา build เอง</p><div class="when">ใช้เมื่อ: อยากรู้ว่ามี image อะไรอยู่บ้าง หรือเช็กว่า build/pull สำเร็จแล้วไหม และดูว่า image กินพื้นที่เท่าไร</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>เข้าไปใน container</b><small>debug จากข้างใน service</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose exec api sh</code><p>เข้า shell ของ service <b>api</b> เพื่อดูไฟล์หรือทดสอบคำสั่งข้างใน container</p><div class="when">ใช้เมื่อ: debug ขั้นสูงขึ้นเล็กน้อย</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ดูพื้นที่ที่ Docker ใช้</b><small>เช็กพื้นที่ image/container/volume</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker system df</code><p>ดูว่า image, container, volume ใช้พื้นที่เท่าไร</p><div class="when">ใช้เมื่อ: เครื่องเริ่มพื้นที่เต็ม</div></div></div>
+      </div>
+
+      <div class="callout amber">สูตรจำง่าย: <b>up</b> = เปิด, <b>ps</b> = ดูสถานะ, <b>logs</b> = ดูอาการ, <b>down</b> = ปิดและลบ container, <b>down -v</b> = ปิดและลบข้อมูล DB ด้วย</div>
+    </section>
+
+    <section id="quiz" class="view">
+      <div class="hero"><h2>ทบทวนแบบเร็ว</h2><p>ลองตอบในใจก่อน แล้วกดดูเฉลย</p></div>
+      <div class="quiz" onclick="this.classList.toggle('show')"><b>1) Dockerfile มีไว้ทำอะไร?</b><div class="answer">ใช้เป็นสูตรสำหรับสร้าง image ของแอป</div></div>
+      <div class="quiz" onclick="this.classList.toggle('show')"><b>2) docker-compose.yml มีไว้ทำอะไร?</b><div class="answer">ใช้กำหนดและเปิดหลาย service/container พร้อมกัน</div></div>
+      <div class="quiz" onclick="this.classList.toggle('show')"><b>3) ports: "3000:80" แปลว่าอะไร?</b><div class="answer">เปิด port 3000 บนเครื่องเรา แล้วส่งเข้า port 80 ใน container</div></div>
+      <div class="quiz" onclick="this.classList.toggle('show')"><b>4) API ใน container ควรต่อ DB ด้วย localhost ไหม?</b><div class="answer">ไม่ควร ควรใช้ชื่อ service ของ DB เช่น mongodb, postgres, mysql หรือ redis เพราะ localhost หมายถึงตัว container เอง</div></div>
+    </section>
+  </main>
+</div>
+</div>
+<script>
+let running = false;
+let selectedDb = 'mongo';
+let builtApiImage = false;
+let containersCreated = false;
+let stoppedServices = new Set();
+let terminalTimer = null;
+
+const DB_OPTIONS = {
+  mongo: {
+    label:'MongoDB', service:'mongodb', count:3, volume:'mongo_data', internal:'27017', url:'mongodb://mongodb:27017/demo', image:'mongo:7',
+    compose:`  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:`,
+    apiEnv:'MONGO_URL: mongodb://mongodb:27017/demo',
+    explain:[
+      ['image: mongo:7','ใช้ image MongoDB สำเร็จรูป ไม่ต้องติดตั้ง Mongo เอง'],
+      ['ports: "27017:27017"','เปิด port 27017 เพื่อให้เครื่องเราลองต่อ DB ได้'],
+      ['volumes: /data/db','ที่เก็บข้อมูลจริงของ MongoDB อยู่ใน /data/db'],
+      ['MONGO_URL','API ใช้ URL นี้เพื่อคุยกับ service ชื่อ mongodb']
+    ]
+  },
+  postgres: {
+    label:'PostgreSQL', service:'postgres', count:3, volume:'postgres_data', internal:'5432', url:'postgresql://app:secret@postgres:5432/demo', image:'postgres:16-alpine',
+    compose:`  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: demo
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:`,
+    apiEnv:'DATABASE_URL: postgresql://app:secret@postgres:5432/demo',
+    explain:[
+      ['POSTGRES_USER','ชื่อ user สำหรับเข้า database'],
+      ['POSTGRES_PASSWORD','รหัสผ่านของ user นี้'],
+      ['POSTGRES_DB','ชื่อ database ที่สร้างตอน container เริ่มครั้งแรก'],
+      ['service name: postgres','API ต้องต่อไปที่ postgres:5432 ไม่ใช่ localhost']
+    ]
+  },
+  mysql: {
+    label:'MySQL', service:'mysql', count:3, volume:'mysql_data', internal:'3306', url:'mysql://app:secret@mysql:3306/demo', image:'mysql:8',
+    compose:`  mysql:
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootsecret
+      MYSQL_DATABASE: demo
+      MYSQL_USER: app
+      MYSQL_PASSWORD: secret
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:`,
+    apiEnv:'DATABASE_URL: mysql://app:secret@mysql:3306/demo',
+    explain:[
+      ['MYSQL_ROOT_PASSWORD','รหัสผ่าน admin/root ของ MySQL'],
+      ['MYSQL_DATABASE','ชื่อ database ที่สร้างให้ตอนเริ่มต้น'],
+      ['MYSQL_USER / MYSQL_PASSWORD','user ปกติที่ API จะใช้ต่อ DB'],
+      ['volumes: /var/lib/mysql','ที่เก็บข้อมูลจริงของ MySQL']
+    ]
+  },
+  redis: {
+    label:'Redis', service:'redis', count:3, volume:'redis_data', internal:'6379', url:'redis://redis:6379', image:'redis:7-alpine',
+    compose:`  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  redis_data:`,
+    apiEnv:'REDIS_URL: redis://redis:6379',
+    explain:[
+      ['Redis คืออะไร','มักใช้ทำ cache, session, queue หรือเก็บ key-value แบบเร็วมาก'],
+      ['ports: "6379:6379"','Redis ใช้ port 6379 เป็นหลัก'],
+      ['command: appendonly yes','เปิดโหมดบันทึกข้อมูลลงไฟล์ เพื่อให้ข้อมูลไม่หายง่าย'],
+      ['REDIS_URL','API ใช้ URL นี้เพื่อคุยกับ service ชื่อ redis']
+    ]
+  }
+};
+
+function $(id){ return document.getElementById(id); }
+function serviceNames(){ const db = DB_OPTIONS[selectedDb]; return ['frontend','api',db.service]; }
+function containerName(service){ return 'dockerlab-' + service + '-1'; }
+function shortContainerId(service){ return service === 'frontend' ? '111aaa222bbb' : (service === 'api' ? '222bbb333ccc' : '333ccc444ddd'); }
+function resolveContainerToService(value){
+  const db = DB_OPTIONS[selectedDb];
+  const v = String(value || '').trim().toLowerCase();
+  for(const service of serviceNames()){
+    if(v === containerName(service).toLowerCase() || v === ('dockerlab-' + service).toLowerCase() || v === shortContainerId(service)) return service;
+  }
+  if(v === 'db' || v === 'database') return db.service;
+  return null;
+}
+function resolveServiceName(name){
+  const db = DB_OPTIONS[selectedDb];
+  const n = String(name || '').trim().toLowerCase();
+  if(n === 'db' || n === 'database') return db.service;
+  if(n === 'frontend' || n === 'web') return 'frontend';
+  if(n === 'api' || n === 'backend') return 'api';
+  if(n === db.service) return db.service;
+  return resolveContainerToService(n);
+}
+function isServiceRunning(name){ return containersCreated && !stoppedServices.has(name); }
+function runningCount(){ return serviceNames().filter(isServiceRunning).length; }
+function refreshRunningFlag(){ running = runningCount() > 0; }
+function serviceLabel(name){ const db = DB_OPTIONS[selectedDb]; return name === db.service ? db.label + ' database' : (name === 'api' ? 'backend service' : 'เว็บหน้าแรก'); }
+function servicePort(name){ const db = DB_OPTIONS[selectedDb]; if(name === 'frontend') return 'localhost:3000 → container:80'; if(name === 'api') return 'localhost:8080 → container:8080'; return 'container:' + db.internal + ' + volume'; }
+function go(id, btn){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const view = $(id); if(view) view.classList.add('active');
+  document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(id === 'dbs') renderDbLesson();
+  if(id === 'editor') initEditorDefaults(false);
+}
+function fullCompose(){
+  const db = DB_OPTIONS[selectedDb];
+  return `services:
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    ports:
+      - "8080:8080"
+    environment:
+      ${db.apiEnv}
+    depends_on:
+      - ${db.service}
+
+${db.compose}`;
+}
+function selectDb(key, btn){
+  selectedDb = key;
+  running = false;
+  containersCreated = false;
+  stoppedServices.clear();
+  builtApiImage = false;
+  document.querySelectorAll('.db-choice').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderDbLesson(); setStatus(); clearTerminal();
+}
+function renderDbLesson(){
+  const db = DB_OPTIONS[selectedDb];
+  const main = $('dbComposeCode'); if(main) main.textContent = fullCompose();
+  const compose = $('composeCode'); if(compose) compose.textContent = fullCompose();
+  const ex = $('dbExplain');
+  if(ex){
+    ex.innerHTML = db.explain.map(([k,v]) => `<div class="explain-item"><b>${k}</b><br>${v}</div>`).join('') +
+      `<div class="explain-item"><b>Connection string</b><br><code>${db.url}</code><p class="tiny">ใน Docker Compose ให้ใช้ชื่อ service คือ <b>${db.service}</b> เป็น hostname</p></div>`;
+  }
+}
+function setStatus(){
+  const db = DB_OPTIONS[selectedDb];
+  refreshRunningFlag();
+  const active = runningCount();
+  const set = (id, text) => { const el=$(id); if(el) el.textContent = text; };
+  set('sImages', builtApiImage || containersCreated ? String(db.count) : '0');
+  set('sContainers', containersCreated ? active + '/' + db.count + ' running' : '0');
+  set('sNetwork', containersCreated ? 'docker-lab_default' : 'ยังไม่มี');
+  set('sDb', containersCreated ? (isServiceRunning(db.service) ? db.label + ' ready' : db.label + ' stopped') : 'ยังไม่รัน');
+  set('sWeb', isServiceRunning('frontend') ? 'localhost:3000' : 'offline');
+  renderServices(); renderPreview(); renderDbLesson();
+}
+function renderServices(){
+  const el = $('serviceCards'); if(!el) return;
+  const data = serviceNames().map(name => [name, serviceLabel(name), servicePort(name)]);
+  el.innerHTML = data.map(d => {
+    const active = isServiceRunning(d[0]);
+    const label = containersCreated ? (active ? 'running' : 'stopped') : 'not created';
+    return `<div class="service-card ${active?'running':''}"><h3>${d[0]} <span class="badge">${label}</span></h3><p>${d[1]}</p><p><b>${d[2]}</b></p></div>`;
+  }).join('');
+}
+function renderPreview(){
+  const db = DB_OPTIONS[selectedDb];
+  const page=$('webPage');
+  const allOk = isServiceRunning('frontend') && isServiceRunning('api') && isServiceRunning(db.service);
+  const apiOk = isServiceRunning('api') && isServiceRunning(db.service);
+  if(page) page.innerHTML = allOk ? `<h2>✅ Docker Demo App</h2><p>Frontend ทำงานแล้ว และเรียก API ได้สำเร็จ</p><p><b>API:</b> connected | <b>${db.label}:</b> ready</p>` : (containersCreated ? `<h2>⚠️ ระบบเปิดบางส่วน</h2><p>มีบาง service ถูก stop อยู่ ลอง <b>docker compose ps</b> เพื่อดูสถานะ หรือใช้ <b>docker compose start ชื่อ service</b></p>` : `<h2>Docker Demo App</h2><p>ยังไม่ได้รันระบบ ไปที่เมนู “Terminal Lab” แล้วกด compose up</p>`);
+  const api=$('apiBox');
+  if(api) api.textContent = apiOk ? `GET http://localhost:8080/health\n\n{\n  "status": "ok",\n  "api": "running",\n  "database": "${db.label} connected",\n  "connection": "${db.url}",\n  "message": "Docker Compose is working!"\n}` : `GET http://localhost:8080/health\n\n{ "status": "offline or partial" }`;
+}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function writeTerminal(lines, onDone){
+  const el = $('terminalText'); if(!el) return;
+  if(terminalTimer) clearInterval(terminalTimer);
+  el.innerHTML = '';
+  let i = 0;
+  terminalTimer = setInterval(() => {
+    if(i >= lines.length){
+      clearInterval(terminalTimer); terminalTimer = null;
+      el.innerHTML = el.innerHTML.replace('<span class="cursor"></span>','') + '<span class="cursor"></span>';
+      if(onDone) onDone();
+      return;
+    }
+    el.innerHTML = el.innerHTML.replace('<span class="cursor"></span>','') + escapeHtml(lines[i++]) + '\n<span class="cursor"></span>';
+    el.scrollTop = el.scrollHeight;
+  }, 220);
+}
+function instantTerminal(text){
+  if(terminalTimer) clearInterval(terminalTimer);
+  terminalTimer = null;
+  const el = $('terminalText'); if(el) el.textContent = text;
+}
+function clearTerminal(){
+  if(terminalTimer) clearInterval(terminalTimer);
+  terminalTimer = null;
+  const el = $('terminalText'); if(el) el.textContent = '$ พร้อมใช้งาน\nพิมพ์คำสั่งเอง หรือกดคำสั่งตัวอย่างด้านบนได้เลย';
+}
+function normalizeCmd(cmd){ return String(cmd || '').trim().replace(/\s+/g, ' '); }
+function useCmd(cmd){
+  const input = $('commandInput');
+  if(input){ input.value = cmd; input.focus(); }
+  simulateCommand(cmd);
+}
+function runCustomCommand(){
+  const input = $('commandInput');
+  const cmd = normalizeCmd(input ? input.value : '');
+  if(!cmd){ instantTerminal('$\nกรุณาพิมพ์คำสั่งก่อน'); return; }
+  simulateCommand(cmd);
+}
+function composeUp(customCmd){
+  const db = DB_OPTIONS[selectedDb];
+  builtApiImage = true; containersCreated = false; stoppedServices.clear(); running = false; setStatus();
+  writeTerminal([
+    '$ ' + (customCmd || 'docker compose up -d --build'),
+    '',
+    'คำแปล: Docker Compose จะอ่าน docker-compose.yml แล้วเปิดทั้งระบบให้เรา',
+    '',
+    '[1/6] อ่านไฟล์ docker-compose.yml',
+    '      เจอ service: frontend, api, ' + db.service,
+    '',
+    '[2/6] build image ของ api จาก Dockerfile',
+    '      FROM node:20-alpine',
+    '      COPY package*.json ./',
+    '      RUN npm ci  → ติดตั้ง package ตาม package-lock.json',
+    '      COPY . .    → เอา source code เข้า image',
+    '      สร้าง image สำเร็จ: docker-lab-api',
+    '',
+    '[3/6] สร้าง network กลางให้ container คุยกัน',
+    '      network: docker-lab_default',
+    '',
+    '[4/6] สร้าง volume สำหรับเก็บข้อมูล ' + db.label,
+    '      volume: docker-lab_' + db.volume,
+    '',
+    '[5/6] เปิด container ตามลำดับ',
+    '      เริ่ม ' + db.service + ' ก่อน เพราะ api ต้องใช้ database',
+    '      เริ่ม api ต่อมา',
+    '      เริ่ม frontend เป็นตัวสุดท้าย',
+    '',
+    '[6/6] ตรวจสถานะ',
+    '      frontend  running  http://localhost:3000',
+    '      api       running  http://localhost:8080',
+    '      ' + db.service.padEnd(9) + ' running  internal:' + db.internal,
+    '',
+    '✅ เสร็จแล้ว! เปิดเว็บได้ที่ http://localhost:3000'
+  ], () => { containersCreated = true; stoppedServices.clear(); running = true; setStatus(); });
+}
+function composePs(customCmd){
+  const db = DB_OPTIONS[selectedDb];
+  if(!containersCreated){ instantTerminal(`$ ${customCmd || 'docker compose ps'}\n\nNAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS\n\nคำแปล: ยังไม่มี container ถูกสร้าง ลอง docker compose up -d --build ก่อน`); return; }
+  const imageMap = {frontend:'nginx:alpine', api:'docker-lab-api'}; imageMap[db.service] = db.image;
+  const portMap = {frontend:'0.0.0.0:3000->80/tcp', api:'0.0.0.0:8080->8080/tcp'}; portMap[db.service] = db.internal + '/tcp';
+  const commandMap = {frontend:'"nginx -g ..."', api:'"npm start"'}; commandMap[db.service] = '"docker-entry..."';
+  const rows = serviceNames().map(service => {
+    const status = isServiceRunning(service) ? 'Up' : 'Exited';
+    return containerName(service).padEnd(23) + imageMap[service].padEnd(21) + commandMap[service].padEnd(17) + service.padEnd(11) + '2 minutes ago'.padEnd(16) + status.padEnd(11) + (isServiceRunning(service) ? portMap[service] : '-');
+  }).join('\n');
+  instantTerminal(`$ ${customCmd || 'docker compose ps'}\n\nNAME                   IMAGE                COMMAND          SERVICE    CREATED         STATUS     PORTS\n${rows}\n\nคำแปลสำคัญ:\n- NAME เช่น ${containerName('api')} = ชื่อ container จริง\n- SERVICE เช่น api = ชื่อ service ใน docker-compose.yml\n- คำสั่ง docker compose stop/start/logs ใช้ชื่อ SERVICE เช่น: docker compose stop api\n- ถ้าจะหยุดด้วยชื่อ container/ID ให้ใช้ docker stop ${containerName('api')}`);
+}
+function composeLogs(customCmd){
+  const db = DB_OPTIONS[selectedDb];
+  if(!containersCreated){ instantTerminal(`$ ${customCmd || 'docker compose logs api'}\n\nยังไม่มี container\n\nคำแปล: ต้อง docker compose up ก่อนถึงจะมี log`); return; }
+  if(!isServiceRunning('api')){ instantTerminal(`$ ${customCmd || 'docker compose logs api'}\n\napi | container is stopped\n\nคำแปล: API ถูกหยุดอยู่ ให้ใช้ docker compose start api ก่อน`); return; }
+  if(!isServiceRunning(db.service)){ instantTerminal(`$ ${customCmd || 'docker compose logs api'}\n\napi | loading environment\napi | DATABASE = ${db.url}\napi | connecting to ${db.label}...\napi | ERROR: database service is stopped ❌\n\nคำแปล: API ยังเปิดอยู่ แต่ DB ถูก stop จึงต่อ database ไม่ได้`); return; }
+  instantTerminal(`$ ${customCmd || 'docker compose logs api'}\n\napi | loading environment\napi | DATABASE = ${db.url}\napi | connecting to ${db.label}...\napi | ${db.label} connected ✅\napi | server listening on :8080\n\nคำแปล: API ต่อ database สำเร็จแล้ว`);
+}
+function composeDown(removeVolume, customCmd){
+  const db = DB_OPTIONS[selectedDb];
+  containersCreated = false;
+  stoppedServices.clear();
+  running = false;
+  if(removeVolume) builtApiImage = false;
+  setStatus();
+  const lines = ['$ ' + customCmd, '', '[1/4] Stopping containers', '[2/4] Removing containers', '[3/4] Removing network docker-lab_default'];
+  if(removeVolume) lines.push('[4/4] Removing volume docker-lab_' + db.volume, '', '✅ ปิดระบบและลบ volume แล้ว', '⚠️ ข้อมูล database จำลองถูกลบ เหมือนเริ่มใหม่จากศูนย์');
+  else lines.push('[4/4] Keeping volume docker-lab_' + db.volume, '', '✅ ปิดระบบแล้ว แต่ข้อมูล database ยังอยู่ใน volume');
+  writeTerminal(lines);
+}
+function stopServices(names, cmd){
+  const db = DB_OPTIONS[selectedDb];
+  if(!containersCreated){ instantTerminal(`$ ${cmd}\n\nยังไม่มี container ให้หยุด\n\nคำแปล: ต้อง docker compose up ก่อน`); return; }
+  const resolved = names.map(resolveServiceName).filter(Boolean);
+  if(!resolved.length){ instantTerminal(`$ ${cmd}\n\nไม่รู้จัก service นี้\n\nservice ที่ใช้ได้: frontend, api, ${db.service} หรือ db`); return; }
+  resolved.forEach(n => stoppedServices.add(n));
+  refreshRunningFlag(); setStatus();
+  const lines = [`$ ${cmd}`, '', `[+] Stopping ${resolved.length}/${resolved.length}`].concat(resolved.map(n => ` ✔ Container ${containerName(n)} Stopped`));
+  lines.push('', 'คำแปล: หยุดเฉพาะ service ที่ระบุ container ยังไม่ถูกลบ', 'ลองใช้ docker compose ps เพื่อดูสถานะ');
+  instantTerminal(lines.join('\n'));
+}
+function startServices(names, cmd){
+  const db = DB_OPTIONS[selectedDb];
+  if(!containersCreated){ instantTerminal(`$ ${cmd}\n\nยังไม่มี container เดิมให้ start\n\nคำแปล: ถ้ายังไม่เคย up ให้ใช้ docker compose up -d --build ก่อน`); return; }
+  const resolved = names.length ? names.map(resolveServiceName).filter(Boolean) : serviceNames();
+  if(!resolved.length){ instantTerminal(`$ ${cmd}\n\nไม่รู้จัก service นี้\n\nservice ที่ใช้ได้: frontend, api, ${db.service} หรือ db`); return; }
+  resolved.forEach(n => stoppedServices.delete(n));
+  refreshRunningFlag(); setStatus();
+  const lines = [`$ ${cmd}`, '', `[+] Running ${resolved.length}/${resolved.length}`].concat(resolved.map(n => ` ✔ Container ${containerName(n)} Started`));
+  lines.push('', 'คำแปล: เปิด container เดิมกลับมา โดยไม่ build ใหม่');
+  instantTerminal(lines.join('\n'));
+}
+function composeConfigOutput(cmd){
+  const db = DB_OPTIONS[selectedDb];
+  if(cmd.toLowerCase().includes('--services')){
+    return `$ ${cmd}
+
+frontend
+api
+${db.service}
+
+คำแปล: นี่คือ service name ที่ใช้กับคำสั่ง Compose เช่น docker compose stop api หรือ docker compose logs ${db.service}`;
+  }
+  if(cmd.toLowerCase().includes('--volumes')){
+    return `$ ${cmd}
+
+${db.volume}
+
+คำแปล: นี่คือ volume ที่ Compose ใช้เก็บข้อมูลของ ${db.label}`;
+  }
+  return `$ ${cmd}
+
+name: docker-lab
+services:
+  frontend:
+    image: nginx:alpine
+    ports:
+      - mode: ingress
+        target: 80
+        published: "3000"
+    depends_on:
+      api:
+        condition: service_started
+  api:
+    build:
+      context: ./api
+    ports:
+      - mode: ingress
+        target: 8080
+        published: "8080"
+    environment:
+      ${db.apiEnv}
+    depends_on:
+      ${db.service}:
+        condition: service_started
+  ${db.service}:
+    image: ${db.image}
+    ports:
+      - mode: ingress
+        target: ${db.internal}
+        published: "${db.internal}"
+volumes:
+  ${db.volume}: null
+
+✅ config อ่านผ่าน
+คำแปล: คำสั่งนี้ใช้เช็กว่า Compose file ถูกต้องและ Docker อ่าน service/ports/volumes ออกมาได้จริง`;
+}
+
+function imagesOutput(cmd){
+  const db = DB_OPTIONS[selectedDb];
+  const [repo, tag='latest'] = db.image.split(':');
+  const rows = [
+    ['REPOSITORY','TAG','IMAGE ID','SIZE'],
+    ['nginx','alpine','605c77e624dd','42MB'],
+    ['node','20-alpine','b01c0ffee123','135MB'],
+    [repo,tag,'9f8e7d6c5b4a',db.service==='redis'?'45MB':'250MB']
+  ];
+  if(builtApiImage || running) rows.splice(1,0,['docker-lab-api','latest','a1b2c3d4e5f6','185MB']);
+  const table = rows.map(r => r[0].padEnd(18) + r[1].padEnd(12) + r[2].padEnd(16) + r[3]).join('\n');
+  return `$ ${cmd}\n\n${table}\n\nคำแปล: image คือ “ต้นแบบ/แม่พิมพ์” ที่ Docker ใช้สร้าง container\n- nginx/node/${repo} คือ image สำเร็จรูปที่ pull มาใช้\n- docker-lab-api จะเห็นหลัง build หรือ compose up --build`;
+}
+function simulateCommand(rawCmd){
+  const cmd = normalizeCmd(rawCmd);
+  const c = cmd.toLowerCase();
+  const db = DB_OPTIONS[selectedDb];
+  if(c === 'clear' || c === 'cls'){ clearTerminal(); return; }
+  if(c === 'docker compose config' || c === 'docker-compose config' || c === 'docker compose config --services' || c === 'docker-compose config --services' || c === 'docker compose config --volumes' || c === 'docker-compose config --volumes'){ instantTerminal(composeConfigOutput(cmd)); return; }
+  if(c === 'docker compose up -d --build' || c === 'docker-compose up -d --build'){ composeUp(cmd); return; }
+  if(c === 'docker compose up -d' || c === 'docker-compose up -d'){
+    builtApiImage = true; containersCreated = false; stoppedServices.clear(); running = false; setStatus();
+    writeTerminal(['$ '+cmd,'','[+] Running 3/3',' ✔ Network docker-lab_default Created',' ✔ Container '+containerName(db.service)+' Started',' ✔ Container '+containerName('api')+' Started',' ✔ Container '+containerName('frontend')+' Started','','✅ เปิดระบบหลังบ้านแล้ว ใช้ terminal ต่อได้เลย'], () => { containersCreated = true; stoppedServices.clear(); running = true; setStatus(); }); return;
+  }
+  if(c === 'docker compose up' || c === 'docker-compose up'){
+    builtApiImage = true; containersCreated = false; stoppedServices.clear(); running = false; setStatus();
+    writeTerminal(['$ '+cmd,'','Compose จะเปิดระบบแบบ foreground และแสดง log สดบนหน้าจอ','ถ้าต้องการให้คืน terminal ใช้: docker compose up -d','','[+] Running 3/3',' ✔ Network docker-lab_default Created',' ✔ Container '+containerName(db.service)+' Started',' ✔ Container '+containerName('api')+' Started',' ✔ Container '+containerName('frontend')+' Started','','frontend | nginx started on port 80','api      | Server listening on port 8080',db.service+' | '+db.label+' ready','','✅ ระบบรันอยู่ แต่ terminal จะถูกใช้ดู log ต่อเนื่อง'], () => { containersCreated = true; stoppedServices.clear(); running = true; setStatus(); }); return;
+  }
+  if(c === 'docker compose build' || c === 'docker-compose build'){
+    builtApiImage = true; setStatus();
+    instantTerminal(`$ ${cmd}\n\n[+] Building api\n => FROM node:20-alpine\n => COPY package*.json ./\n => RUN npm ci\n => COPY . .\n => exporting image docker-lab-api\n\n✅ build สำเร็จ แต่ยังไม่ได้เปิด container`); return;
+  }
+  if(c === 'docker compose ps' || c === 'docker-compose ps'){ composePs(cmd); return; }
+  if(c === 'docker compose logs api' || c === 'docker-compose logs api'){ composeLogs(cmd); return; }
+  if(c === 'docker compose logs' || c === 'docker-compose logs'){
+    if(!containersCreated){ instantTerminal(`$ ${cmd}\n\nยังไม่มี container จึงไม่มี log ให้ดู\n\nคำแปล: ต้อง docker compose up ก่อน`); return; }
+    const parts=[];
+    if(isServiceRunning('frontend')) parts.push('frontend | nginx started on port 80'); else parts.push('frontend | container is stopped');
+    if(isServiceRunning('api')) parts.push('api      | Server listening on port 8080'); else parts.push('api      | container is stopped');
+    if(isServiceRunning(db.service)) parts.push(db.service+' | '+db.label+' ready'); else parts.push(db.service+' | container is stopped');
+    instantTerminal(`$ ${cmd}\n\n${parts.join('\n')}\n\nคำแปล: logs แสดงตามสถานะ service ตอนนี้`); return;
+  }
+  if(c === 'docker compose logs -f api' || c === 'docker-compose logs -f api'){
+    instantTerminal(isServiceRunning('api') ? `$ ${cmd}\n\napi | Server listening on port 8080\napi | ${isServiceRunning(db.service) ? db.label + ' connected' : 'database is stopped'}\napi | waiting for new requests...\n\nคำแปล: -f คือ follow รอแสดง log ใหม่ต่อเรื่อย ๆ` : `$ ${cmd}\n\nservice api ยังไม่รัน\n\nคำแปล: เปิด API ก่อนด้วย docker compose start api`); return;
+  }
+  if(c === 'docker compose down' || c === 'docker-compose down'){ composeDown(false, cmd); return; }
+  if(c === 'docker compose down -v' || c === 'docker-compose down -v'){ composeDown(true, cmd); return; }
+  if(c === 'docker compose stop' || c === 'docker-compose stop'){ stopServices(serviceNames(), cmd); return; }
+  if(c.startsWith('docker compose stop ') || c.startsWith('docker-compose stop ')){
+    const names = cmd.replace(/^docker(?: |-)?compose stop\s+/i,'').split(/\s+/).filter(Boolean);
+    stopServices(names, cmd); return;
+  }
+  if(c === 'docker compose start' || c === 'docker-compose start'){ startServices([], cmd); return; }
+  if(c.startsWith('docker compose start ') || c.startsWith('docker-compose start ')){
+    const names = cmd.replace(/^docker(?: |-)?compose start\s+/i,'').split(/\s+/).filter(Boolean);
+    startServices(names, cmd); return;
+  }
+  if(c.startsWith('docker stop ')){
+    const names = cmd.replace(/^docker stop\s+/i,'').split(/\s+/).filter(Boolean);
+    const resolved = names.map(resolveContainerToService).filter(Boolean);
+    if(!containersCreated){ instantTerminal(`$ ${cmd}\n\nยังไม่มี container ให้หยุด\n\nคำแปล: ต้อง docker compose up ก่อน`); return; }
+    if(!resolved.length){ instantTerminal(`$ ${cmd}\n\nไม่รู้จัก container นี้\n\nลองดูชื่อ container ด้วย: docker compose ps หรือ docker ps -a`); return; }
+    resolved.forEach(n => stoppedServices.add(n));
+    refreshRunningFlag(); setStatus();
+    instantTerminal(`$ ${cmd}\n\n${resolved.map(containerName).join('\n')}\n\nคำแปล: docker stop ใช้ชื่อ container หรือ container id ไม่ใช่ชื่อ service`); return;
+  }
+  if(c.startsWith('docker start ')){
+    const names = cmd.replace(/^docker start\s+/i,'').split(/\s+/).filter(Boolean);
+    const resolved = names.map(resolveContainerToService).filter(Boolean);
+    if(!containersCreated){ instantTerminal(`$ ${cmd}\n\nยังไม่มี container เดิมให้ start\n\nคำแปล: ต้อง docker compose up ก่อน`); return; }
+    if(!resolved.length){ instantTerminal(`$ ${cmd}\n\nไม่รู้จัก container นี้\n\nลองดูชื่อ container ด้วย: docker ps -a`); return; }
+    resolved.forEach(n => stoppedServices.delete(n));
+    refreshRunningFlag(); setStatus();
+    instantTerminal(`$ ${cmd}\n\n${resolved.map(containerName).join('\n')}\n\nคำแปล: docker start ใช้ชื่อ container หรือ container id`); return;
+  }
+    if(c === 'docker images' || c === 'docker image ls' || c === 'docker image list'){ instantTerminal(imagesOutput(cmd)); return; }
+  if(c === 'docker ps -a'){
+    if(!containersCreated){ instantTerminal(`$ ${cmd}\n\nCONTAINER ID   IMAGE     STATUS    NAMES\n\nคำแปล: ยังไม่มี container ใน simulator ตอนนี้`); return; }
+    const imageMap = {frontend:'nginx:alpine', api:'docker-lab-api'}; imageMap[db.service] = db.image;
+    const rows = serviceNames().map(n => `${shortContainerId(n).padEnd(15)}${imageMap[n].padEnd(18)}${(isServiceRunning(n)?'Up':'Exited').padEnd(12)}${containerName(n)}`).join('\n');
+    instantTerminal(`$ ${cmd}\n\nCONTAINER ID   IMAGE             STATUS      NAMES\n${rows}\n\nคำแปล: docker ps -a เห็นทั้ง running และ stopped container`); return;
+  }
+  if(c === 'docker system df'){
+    instantTerminal(`$ ${cmd}\n\nTYPE            TOTAL     ACTIVE    SIZE\nImages          ${builtApiImage || running ? db.count : 2}         ${running ? db.count : 0}         ${running ? '520MB' : '180MB'}\nContainers      ${running ? db.count : 0}         ${running ? db.count : 0}         ${running ? '12MB' : '0B'}\nVolumes         ${running ? 1 : 0}         ${running ? 1 : 0}         ${running ? '35MB' : '0B'}\n\nคำแปล: ใช้ดูว่า Docker กินพื้นที่ประมาณไหน`); return;
+  }
+  if(c === 'docker compose exec api sh' || c === 'docker-compose exec api sh'){
+    instantTerminal(isServiceRunning('api') ? `$ ${cmd}\n\n/app # ls\nDockerfile  package.json  package-lock.json  src\n/app # node -v\nv20.x.x\n/app # echo $DATABASE_URL\n${db.url}\n\nคำแปล: เราเข้าไปดูข้างใน container api ได้แล้ว` : `$ ${cmd}\n\nservice "api" is not running\n\nคำแปล: ต้อง docker compose up หรือ docker compose start api ก่อนถึงจะ exec เข้า container ได้`); return;
+  }
+  instantTerminal(`$ ${cmd}\n\nขออภัย simulator นี้ยังไม่รู้จักคำสั่งนี้\n\nลองใช้คำสั่งเหล่านี้:\n- docker compose up -d --build\n- docker compose ps\n- docker compose logs api\n- docker compose down\n- docker compose down -v\n- docker images\n- docker ps -a\n- docker system df\n- clear`);
+}
+function toggleAcc(btn){ const item = btn.closest('.acc-item'); if(item) item.classList.toggle('open'); }
+function toggleAnswer(el){ const q = el.closest('.quiz'); if(q) q.classList.toggle('show'); }
+
+
+const DEFAULT_PACKAGE_JSON = `{
+  "name": "docker-demo-api",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}`;
+
+const DEFAULT_DOCKERFILE = `FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+EXPOSE 8080
+CMD ["npm", "start"]`;
+
+function editorComposeTemplate(){ return fullCompose(); }
+function setEditorValue(id, value){ const el=$(id); if(el) el.value=value; }
+function getEditorValue(id){ const el=$(id); return el ? el.value : ''; }
+function initEditorDefaults(force=false){
+  if(force || !getEditorValue('pkgEditor')) setEditorValue('pkgEditor', DEFAULT_PACKAGE_JSON);
+  if(force || !getEditorValue('dockerfileEditor')) setEditorValue('dockerfileEditor', DEFAULT_DOCKERFILE);
+  if(force || !getEditorValue('composeEditor')) setEditorValue('composeEditor', editorComposeTemplate());
+}
+function resetEditorDefaults(){ initEditorDefaults(true); validateEditorFiles(false); clearEditorTerminal(); }
+function clearEditorTerminal(){ const el=$('editorTerminalText'); if(el) el.textContent='$ พร้อมใช้งาน\nลองแก้ไฟล์ แล้วกด Run ได้เลย'; }
+function editorTerminal(text){ const el=$('editorTerminalText'); if(el) el.textContent=text; }
+function loadBrokenExample(){
+  setEditorValue('pkgEditor', `{
+  "name": "broken-api",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+  }
+}`);
+  setEditorValue('dockerfileEditor', `WORKDIR /app
+COPY package*.json ./
+COPY . .
+EXPOSE 8080`);
+  setEditorValue('composeEditor', `services:
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    ports:
+      - "3000:8080"
+    environment:
+      DATABASE_URL: mongodb://localhost:27017/demo
+    depends_on:
+      - db
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"`);
+  validateEditorFiles(true);
+  editorTerminal('$ โหลดตัวอย่างที่ผิดแล้ว\nลองกด Run เพื่อดู error หรือค่อย ๆ แก้ตามคำอธิบายใน panel ซ้าย');
+}
+function lineOf(text, needle){ const idx = text.indexOf(needle); if(idx < 0) return null; return text.slice(0, idx).split('\n').length; }
+function parseComposeSimple(text){
+  const services = {};
+  let inServices=false, current=null, currentList=null;
+  const lines = text.replace(/\t/g,'    ').split(/\r?\n/);
+  lines.forEach((raw, idx) => {
+    const noComment = raw.replace(/\s+#.*$/,'');
+    if(!noComment.trim()) return;
+    const indent = (noComment.match(/^ */)||[''])[0].length;
+    const t = noComment.trim();
+    if(indent===0 && t === 'services:'){ inServices=true; current=null; return; }
+    if(indent===0 && t.endsWith(':') && t !== 'services:'){ inServices=false; current=null; return; }
+    if(!inServices) return;
+    if(indent===2 && /^[A-Za-z0-9_.-]+:$/.test(t)){
+      current = t.slice(0,-1);
+      services[current] = {line: idx+1, props:{}, depends:[], ports:[], env:{}, raw:[]};
+      currentList=null; return;
+    }
+    if(!current) return;
+    services[current].raw.push({line:idx+1,text:raw});
+    const prop = t.match(/^([A-Za-z0-9_.-]+):(?:\s*(.*))?$/);
+    if(indent===4 && prop){
+      const key=prop[1], val=(prop[2]||'').trim();
+      services[current].props[key]=val || true;
+      currentList=key; return;
+    }
+    if(indent>=6 && t.startsWith('- ') && currentList){
+      const val = t.slice(2).trim().replace(/^['"]|['"]$/g,'');
+      if(currentList==='depends_on') services[current].depends.push({value:val,line:idx+1});
+      if(currentList==='ports') services[current].ports.push({value:val,line:idx+1});
+      return;
+    }
+    if(indent>=6 && currentList==='environment'){
+      const m=t.match(/^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$/);
+      if(m) services[current].env[m[1]]={value:m[2].trim().replace(/^['"]|['"]$/g,''),line:idx+1};
+    }
+  });
+  return services;
+}
+function issue(type, title, detail, line){ return {type,title,detail,line}; }
+function validateEditorFiles(showPanel=true){
+  initEditorDefaults(false);
+  const pkg = getEditorValue('pkgEditor');
+  const dockerfile = getEditorValue('dockerfileEditor');
+  const compose = getEditorValue('composeEditor');
+  const issues=[];
+  let pkgObj=null;
+  try{ pkgObj=JSON.parse(pkg); }
+  catch(e){ issues.push(issue('error','package.json อ่านไม่ได้','JSON format ผิด: '+e.message, null)); }
+  if(pkgObj){
+    if(!pkgObj.scripts || !pkgObj.scripts.start) issues.push(issue('error','package.json ไม่มี scripts.start','Dockerfile ใช้ CMD ["npm","start"] ดังนั้นต้องมี scripts.start เช่น "start": "node app.js"', null));
+    if(!pkgObj.dependencies || Object.keys(pkgObj.dependencies).length===0) issues.push(issue('warn','dependencies ว่าง','ถ้าเป็น API จริงมักมี express หรือ database driver อยู่ใน dependencies', null));
+  }
+  const dfLines = dockerfile.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  if(!dfLines.some(l=>/^FROM\s+/i.test(l))) issues.push(issue('error','Dockerfile ไม่มี FROM','Dockerfile ต้องเริ่มจาก base image เช่น FROM node:20-alpine', null));
+  if(!dfLines.some(l=>/^WORKDIR\s+/i.test(l))) issues.push(issue('warn','Dockerfile ไม่มี WORKDIR','แนะนำให้กำหนด WORKDIR /app เพื่อให้คำสั่งต่อ ๆ ไปทำงานในโฟลเดอร์เดียวกัน', null));
+  if(!/COPY\s+package\*\.json\s+\.\/?/i.test(dockerfile)) issues.push(issue('warn','ไม่ได้ COPY package*.json ก่อน npm install','ถ้า copy package ก่อน จะใช้ Docker cache ได้ดีและ build เร็วขึ้น', lineOf(dockerfile,'COPY')));
+  if(!/RUN\s+npm\s+(ci|install)/i.test(dockerfile)) issues.push(issue('error','Dockerfile ไม่มี RUN npm ci/install','ต้องติดตั้ง dependencies ก่อนรัน Node app เช่น RUN npm ci', null));
+  if(!/^CMD\s+/im.test(dockerfile)) issues.push(issue('error','Dockerfile ไม่มี CMD','ต้องบอกว่า container เริ่มแล้วให้รันอะไร เช่น CMD ["npm", "start"]', null));
+  if(/CMD\s+\["npm",\s*"start"\]/i.test(dockerfile) && pkgObj && (!pkgObj.scripts || !pkgObj.scripts.start)) issues.push(issue('error','CMD เรียก npm start แต่ package.json ไม่มี start','เพิ่ม scripts.start ใน package.json หรือเปลี่ยน CMD ให้ตรงกับ script ที่มี', null));
+
+  if(!/^services:\s*$/m.test(compose)) issues.push(issue('error','docker-compose.yml ไม่มี services:','Compose file ต้องมี services: เป็นหัวข้อหลัก', lineOf(compose,'services')));
+  const services = parseComposeSimple(compose);
+  const serviceKeys = Object.keys(services);
+  if(serviceKeys.length===0) issues.push(issue('error','ไม่พบ service ใต้ services:','ควรมี service เช่น frontend, api, mongodb', null));
+  serviceKeys.forEach(name=>{
+    const svc=services[name];
+    if(!svc.props.image && !svc.props.build) issues.push(issue('error',`service "${name}" ไม่มี image หรือ build`,`service ต้องบอกว่าจะใช้ image สำเร็จรูป หรือ build จาก Dockerfile`, svc.line));
+    svc.depends.forEach(d=>{ if(!services[d.value]) issues.push(issue('error',`depends_on อ้างถึง "${d.value}" แต่ไม่มี service นี้`,`ใน docker-compose.yml ต้องมี service ชื่อ ${d.value} หรือแก้ depends_on ให้ตรง`, d.line)); });
+    svc.ports.forEach(p=>{ if(!/^\d{2,5}:\d{2,5}(\/tcp)?$/.test(p.value)) issues.push(issue('error',`port format ผิดใน service "${name}"`,`ควรเขียนแบบ "3000:80" หรือ "8080:8080"`, p.line)); });
+    Object.entries(svc.env).forEach(([k,obj])=>{ if(/localhost|127\.0\.0\.1/.test(obj.value)) issues.push(issue('error',`environment ${k} ใช้ localhost`,`ใน container ถ้าจะเรียก DB อีก service ให้ใช้ชื่อ service เช่น mongodb/postgres/mysql/redis ไม่ใช่ localhost`, obj.line)); });
+  });
+  const hostPorts={};
+  serviceKeys.forEach(name=>services[name].ports.forEach(p=>{ const host=p.value.split(':')[0]; if(hostPorts[host]) issues.push(issue('error',`host port ${host} ซ้ำ`,`service ${hostPorts[host]} และ ${name} ใช้ port ฝั่งเครื่องเราซ้ำกัน ให้เปลี่ยนซ้ายมือ เช่น "3001:80"`, p.line)); else hostPorts[host]=name; }));
+  if(services.api){
+    const envText = Object.values(services.api.env).map(v=>v.value).join(' ');
+    const depNames = services.api.depends.map(d=>d.value);
+    const dbNames = serviceKeys.filter(n=>!['frontend','api'].includes(n));
+    if(dbNames.length && !depNames.some(d=>dbNames.includes(d))) issues.push(issue('warn','api ยังไม่ได้ depends_on database','ถ้า API ต้องรอ DB ให้ใส่ depends_on เป็นชื่อ service ของ DB เช่น '+dbNames[0], services.api.line));
+    if(dbNames.length && envText && !dbNames.some(n=>envText.includes(n))) issues.push(issue('warn','connection string อาจไม่ตรงกับ service name','URL ของ API ควรมี hostname เป็นชื่อ service ของ DB เช่น '+dbNames[0], services.api.line));
+  }
+  if(issues.length===0) issues.push(issue('ok','ตรวจผ่าน','ไฟล์หลักดูถูกต้อง สามารถจำลอง docker compose up ได้', null));
+  if(showPanel){
+    const panel=$('validationResult');
+    if(panel){ panel.innerHTML = issues.map(i=>`<div class="issue ${i.type}"><b>${i.type==='error'?'❌':i.type==='warn'?'⚠️':'✅'} ${escapeHtml(i.title)}</b><div>${escapeHtml(i.detail)}</div>${i.line?`<div class="line-ref">ประมาณบรรทัดที่ ${i.line}</div>`:''}</div>`).join(''); }
+  }
+  return {ok: !issues.some(i=>i.type==='error'), issues, services};
+}
+function runEditorCompose(){
+  const result = validateEditorFiles(true);
+  if(!result.ok){
+    const errors = result.issues.filter(i=>i.type==='error');
+    editorTerminal('$ docker compose up -d --build\n\nERROR: config validation failed\n\n' + errors.map((e,idx)=>`${idx+1}. ${e.title}\n   ${e.detail}${e.line?`\n   line: ${e.line}`:''}`).join('\n\n') + '\n\nคำแปล: Docker ยังไม่ควรเริ่ม build เพราะไฟล์ config มีจุดที่ต้องแก้ก่อน');
+    return;
+  }
+  const serviceList = Object.keys(result.services);
+  builtApiImage = true; containersCreated = true; stoppedServices.clear(); running = true; setStatus();
+  editorTerminal('$ docker compose up -d --build\n\n[1/5] ตรวจ package.json, Dockerfile, docker-compose.yml ✅\n[2/5] Build image จาก Dockerfile ✅\n[3/5] สร้าง network สำหรับ services: ' + serviceList.join(', ') + '\n[4/5] สร้าง/เชื่อม volume ตาม compose file ✅\n[5/5] Start containers ✅\n\n' + serviceList.map(s=>'✔ '+s+' running').join('\n') + '\n\n✅ จำลองสำเร็จ: config ที่แก้เองสามารถรันได้');
+}
+
+function copyTextToClipboard(text, okMsg){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>editorTerminal('$ '+okMsg+' ✅')).catch(()=>fallbackCopy(text, okMsg));
+  } else { fallbackCopy(text, okMsg); }
+}
+function fallbackCopy(text, okMsg){
+  const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); editorTerminal('$ '+okMsg+' ✅'); }
+  catch(e){ editorTerminal('$ copy failed\n'+e.message); }
+  ta.remove();
+}
+function copyEditorValue(id){ copyTextToClipboard(getEditorValue(id), 'copy '+id); }
+function copyEditorBundle(){
+  const bundle = '--- package.json ---\n'+getEditorValue('pkgEditor')+'\n\n--- Dockerfile ---\n'+getEditorValue('dockerfileEditor')+'\n\n--- docker-compose.yml ---\n'+getEditorValue('composeEditor');
+  copyTextToClipboard(bundle, 'copy all editor files');
+}
+function downloadEditorFile(id, filename){
+  const blob = new Blob([getEditorValue(id)], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  editorTerminal('$ download '+filename+' ✅');
+}
+
+document.addEventListener('DOMContentLoaded', () => { setStatus(); renderDbLesson(); initEditorDefaults(false); });
+setStatus();
+</script>
+</body>
+</html>
