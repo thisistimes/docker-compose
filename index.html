@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Compose Simulator — Easy Mode</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f6f8fb;--card:#ffffff;--ink:#172033;--muted:#61708a;--line:#d8e0ec;--blue:#2563eb;--green:#16a34a;--amber:#f59e0b;--red:#dc2626;--dark:#0f172a;--soft:#eef4ff}
+body{font-family:"Segoe UI","Noto Sans Thai",Tahoma,sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.75}
+.app{min-height:100vh;display:flex;flex-direction:column}.top{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;padding:22px 26px}.top h1{font-size:28px;margin-bottom:6px}.top p{color:#dbeafe;max-width:900px}.layout{display:grid;grid-template-columns:290px 1fr;gap:0;flex:1}.side{background:white;border-right:1px solid var(--line);padding:18px;position:sticky;top:0;height:calc(100vh - 102px);overflow:auto}.side h3{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:12px 0}.nav{display:block;width:100%;border:1px solid var(--line);background:#fff;padding:12px 14px;border-radius:12px;text-align:left;cursor:pointer;margin-bottom:8px;color:var(--ink);font-weight:700}.nav small{display:block;color:var(--muted);font-weight:500;margin-top:2px}.nav.active{border-color:var(--blue);background:var(--soft);color:var(--blue)}.status{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfdff;margin-top:14px}.status-row{display:flex;justify-content:space-between;padding:6px 0;color:var(--muted);font-size:14px}.status-row b{color:var(--ink)}.main{padding:22px;overflow:auto}.view{display:none}.view.active{display:block}.hero{background:white;border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:18px}.hero h2{font-size:26px;margin-bottom:8px}.simple-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}.box{background:white;border:1px solid var(--line);border-radius:18px;padding:18px}.box h3{font-size:21px;margin-bottom:8px}.box .emoji{font-size:36px;display:block;margin-bottom:5px}.box p,.box li{color:#334155}.callout{border-left:5px solid var(--blue);background:#eff6ff;border-radius:12px;padding:14px 16px;margin:14px 0;color:#1e3a8a}.callout.green{border-left-color:var(--green);background:#ecfdf5;color:#14532d}.callout.amber{border-left-color:var(--amber);background:#fffbeb;color:#78350f}.callout.red{border-left-color:var(--red);background:#fef2f2;color:#7f1d1d}.flow{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;margin:18px 0}.step{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;min-width:160px;flex:1;text-align:center}.step b{display:block;font-size:18px}.arrow{display:flex;align-items:center;color:#94a3b8;font-size:26px}.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}.code{background:#0f172a;color:#dbeafe;border-radius:16px;padding:16px;overflow:auto;font-family:"Cascadia Code","Courier New",monospace;font-size:14px;line-height:1.7;white-space:pre;min-height:360px}.code .comment{color:#94a3b8}.explain{display:flex;flex-direction:column;gap:10px}.explain-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}.explain-item b{color:var(--blue)}.tag{display:inline-block;background:#e0ecff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:999px;padding:2px 9px;font-size:13px;font-weight:700;margin:2px}.terminal{background:#020617;color:#e5e7eb;border-radius:18px;overflow:hidden;border:1px solid #0f172a}.terminal-head{background:#111827;padding:12px 14px;color:#cbd5e1;font-weight:700}.terminal-body{padding:16px;min-height:360px;font-family:"Cascadia Code","Courier New",monospace;font-size:14px;line-height:1.75;white-space:pre-wrap}.term-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.btn{border:0;border-radius:12px;padding:11px 15px;cursor:pointer;font-weight:800;font-family:inherit;font-size:15px}.btn.primary{background:var(--blue);color:white}.btn.green{background:var(--green);color:white}.btn.dark{background:#1f2937;color:white}.btn.red{background:var(--red);color:white}.screen{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:white}.browserbar{background:#e5e7eb;padding:10px;display:flex;gap:8px;align-items:center}.dot{width:12px;height:12px;border-radius:50%;display:inline-block}.r{background:#ef4444}.y{background:#f59e0b}.g{background:#22c55e}.url{background:white;border:1px solid #cbd5e1;border-radius:999px;padding:5px 12px;flex:1;color:#475569;font-size:14px}.page{padding:30px;text-align:center;background:linear-gradient(135deg,#eff6ff,#ecfdf5);min-height:230px}.page h2{font-size:28px;margin-bottom:8px;color:#111827}.api{background:#111827;color:#e5e7eb;border-radius:14px;padding:14px;font-family:"Cascadia Code","Courier New",monospace;font-size:14px;white-space:pre-wrap;margin-top:12px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.service-card{border:1px solid var(--line);border-radius:16px;background:white;padding:16px}.service-card.running{border-color:#86efac;background:#f0fdf4}.service-card h3{display:flex;justify-content:space-between;gap:8px}.badge{font-size:12px;border-radius:999px;padding:2px 8px;background:#e2e8f0;color:#475569}.running .badge{background:#dcfce7;color:#166534}.mini-table{width:100%;border-collapse:collapse;background:white;border:1px solid var(--line);border-radius:14px;overflow:hidden}.mini-table th,.mini-table td{padding:10px;border-bottom:1px solid var(--line);text-align:left}.mini-table th{background:#f8fafc;color:#475569}.quiz{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}.answer{display:none;margin-top:10px;color:#14532d;background:#ecfdf5;border-radius:10px;padding:10px}.show .answer{display:block}.db-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0}.db-choice{border:2px solid var(--line);background:white;border-radius:16px;padding:14px;text-align:left;cursor:pointer;font-family:inherit}.db-choice b{display:block;font-size:18px}.db-choice span{color:var(--muted);font-size:14px}.db-choice.active{border-color:var(--blue);background:var(--soft)}.tiny{font-size:14px;color:var(--muted)}.cursor{display:inline-block;width:8px;height:18px;background:#22c55e;margin-left:2px;vertical-align:-3px;animation:blink .8s infinite}@keyframes blink{0%,45%{opacity:1}46%,100%{opacity:0}}.cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.cheat-card{background:white;border:1px solid var(--line);border-radius:16px;padding:16px}.cheat-card h3{font-size:18px;margin-bottom:8px;color:#0f172a}.cheat-code{display:block;background:#0f172a;color:#dbeafe;border-radius:9px;padding:8px 10px;margin:6px 0;font-family:"Cascadia Code","Courier New",monospace;font-size:12.5px;white-space:pre-wrap;line-height:1.45}.cheat-card p{color:#334155}.cheat-card .when{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;color:#475569;font-size:15px}.cheat-section-title{margin:22px 0 10px;font-size:20px}.progress-line{color:#86efac}.term-running{color:#fbbf24;font-weight:700}.term-input-wrap{display:flex;gap:10px;align-items:center;margin:12px 0;background:white;border:1px solid var(--line);border-radius:16px;padding:12px}.prompt-badge{background:#0f172a;color:#86efac;border-radius:10px;padding:8px 10px;font-family:"Cascadia Code","Courier New",monospace;font-size:14px}.cmd-input{flex:1;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-family:"Cascadia Code","Courier New",monospace;font-size:15px;outline:none}.cmd-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}.hint-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.hint-chip{border:1px solid var(--line);background:white;border-radius:999px;padding:6px 10px;cursor:pointer;color:#334155;font-size:14px}.hint-chip:hover{border-color:var(--blue);color:var(--blue);background:var(--soft)}.lab-note{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;color:#334155}.accordion{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.acc-item{background:white;border:1px solid var(--line);border-radius:13px;overflow:hidden}.acc-head{width:100%;border:0;background:white;padding:10px 12px;text-align:left;cursor:pointer;font-family:inherit;display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:76px}.acc-head b{font-size:15px;color:#0f172a;line-height:1.3}.acc-head small{display:block;color:var(--muted);font-size:12px;margin-top:2px;line-height:1.35}.acc-arrow{color:#64748b;font-weight:900;transition:.18s}.acc-body{display:none;padding:0 12px 12px}.acc-item.open .acc-body{display:block}.acc-item.open .acc-arrow{transform:rotate(90deg)}.acc-body p{color:#334155;margin:6px 0;font-size:14px;line-height:1.55}.acc-body .when{background:#f8fafc;border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin-top:7px;color:#475569;font-size:13px;line-height:1.45}.acc-section{margin:20px 0 10px;font-size:20px}.term-ok{color:#86efac}.term-warn{color:#fbbf24}.term-err{color:#fca5a5}
+.editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.editor-card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}.editor-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.03)}.editor-head b{font-size:16px}.editor-head small{color:var(--muted)}.editor-area{width:100%;min-height:300px;border:0;background:#08111b;color:#dbeafe;padding:14px;font-family:"Cascadia Code","Courier New",monospace;font-size:13.5px;line-height:1.6;resize:vertical;outline:none}.editor-area.short{min-height:230px}.editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.validation-panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;min-height:120px}.issue{border-left:4px solid var(--line);padding:10px 12px;margin:8px 0;border-radius:10px;background:rgba(255,255,255,.04)}.issue.error{border-left-color:var(--red);background:rgba(220,38,38,.08)}.issue.warn{border-left-color:var(--amber);background:rgba(245,158,11,.10)}.issue.ok{border-left-color:var(--green);background:rgba(22,163,74,.10)}.issue b{display:block;margin-bottom:3px}.editor-terminal{min-height:260px}.mini-kbd{font-family:"Cascadia Code","Courier New",monospace;background:#111827;color:#dbeafe;border-radius:8px;padding:2px 6px;font-size:12px}.line-ref{color:var(--muted);font-size:12px;margin-top:4px}.full-row{grid-column:1/-1}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.side{height:auto;position:relative}.simple-grid,.split,.accordion,.editor-grid{grid-template-columns:1fr}.arrow{display:none}.top h1{font-size:24px}}
+
+
+/* ===== Comfort Theme Update ===== */
+:root{
+  --bg:#101820;
+  --card:#17212b;
+  --ink:#e8edf2;
+  --muted:#a8b4c2;
+  --line:#2a3a48;
+  --blue:#7db7ff;
+  --green:#7ddc9a;
+  --amber:#ffd166;
+  --red:#ff8a8a;
+  --dark:#0b1118;
+  --soft:#203247;
+}
+body{background:var(--bg);color:var(--ink)}
+.top{background:linear-gradient(135deg,#12202c,#1f3447);color:#f5f7fa;border-bottom:1px solid var(--line)}
+.top p{color:#c4d2df}
+.side,.hero,.box,.step,.explain-item,.service-card,.quiz,.db-choice,.lab-note,.acc-item,.acc-head,.term-input-wrap,.screen,.mini-table{background:var(--card)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.main{background:linear-gradient(180deg,#101820,#0f171f)}
+.nav{background:#141f29;color:var(--ink);border-color:var(--line)}
+.nav:hover,.hint-chip:hover{background:#203247;color:#dcecff;border-color:#466b91}
+.nav.active,.db-choice.active{background:#21364b;color:#dcecff;border-color:#75aee8}
+.status{background:#141f29;border-color:var(--line)}
+.status-row,.tiny,.nav small,.db-choice span,.acc-head small{color:var(--muted)!important}
+.status-row b,.hero h2,.box h3,.acc-head b,.page h2{color:#f3f7fb!important}
+.box p,.box li,.service-card p,.acc-body p,.lab-note p,.cheat-card p{color:#c7d2df!important}
+.callout{background:#182d44;color:#d6eaff;border-left-color:#7db7ff}
+.callout.green{background:#173423;color:#d9ffe4;border-left-color:#7ddc9a}
+.callout.amber{background:#3a2d16;color:#fff2c6;border-left-color:#ffd166}
+.callout.red{background:#3a1d1d;color:#ffdada;border-left-color:#ff8a8a}
+.code,.terminal,.api,.cheat-code,.prompt-badge{background:#0b1118!important;color:#dbeafe!important;border-color:#263645!important}
+.terminal-head{background:#121c26;color:#cfdae6;border-bottom:1px solid #263645}
+.terminal-body{background:#0b1118;color:#dce7f3}
+.cmd-input{background:#101820;color:#e8edf2;border-color:var(--line)}
+.cmd-input::placeholder{color:#748497}.cmd-input:focus{border-color:#7db7ff;box-shadow:0 0 0 3px rgba(125,183,255,.14)}
+.hint-chip{background:#141f29;color:#cbd7e4;border-color:var(--line)}
+.btn.primary{background:#4f8fd1;color:#061018}.btn.green{background:#50b874;color:#061018}.btn.dark{background:#263645;color:#e8edf2}.btn.red{background:#c85e5e;color:#fff}
+.mini-table th{background:#13202b;color:#cbd7e4}.mini-table td,.mini-table th{border-color:var(--line)}
+.browserbar{background:#121c26}.url{background:#0f171f;color:#cbd7e4;border-color:var(--line)}
+.page{background:linear-gradient(135deg,#15283a,#183226)}
+.service-card.running{background:#183326!important;border-color:#4f9f68!important}.running .badge{background:#244b32;color:#a8f0be}.badge{background:#243341;color:#c8d3df}
+.tag{background:#203247;color:#d6eaff;border-color:#466b91}
+.answer{background:#173423;color:#d9ffe4}.when,.acc-body .when{background:#13202b!important;color:#bdc9d6!important;border-color:var(--line)!important}
+.acc-head:hover{background:#1b2a36!important}.acc-item.open .acc-head{background:#203247!important}
+.acc-arrow{color:#8da5ba}.dot.r{background:#ff6b6b}.dot.y{background:#ffd166}.dot.g{background:#7ddc9a}
+.progress-line,.term-ok{color:#7ddc9a}.term-warn,.term-running{color:#ffd166}.term-err{color:#ff9b9b}
+
+.review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:16px 0}.review-card{background:white;border:1px solid var(--line);border-radius:16px;padding:16px}.review-card h3{font-size:19px;margin-bottom:8px}.check-list{list-style:none;margin-top:10px}.check-list li{border:1px solid var(--line);background:#fbfdff;border-radius:12px;padding:10px 12px;margin-bottom:8px;color:#334155}.check-list li:before{content:"✓";display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:999px;background:#dcfce7;color:#166534;font-weight:900;margin-right:8px}.mini-actions{display:flex;gap:6px;flex-wrap:wrap}.btn.mini{padding:6px 9px;font-size:12px;border-radius:9px}.architecture{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:stretch;margin-top:14px}.arch-node{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}.arch-node b{display:block;color:var(--blue)}.arch-arrow{display:flex;align-items:center;justify-content:center;color:#64748b;font-size:24px}@media(max-width:900px){.architecture{grid-template-columns:1fr}.arch-arrow{transform:rotate(90deg)}.accordion{grid-template-columns:1fr}.editor-grid,.split,.simple-grid{grid-template-columns:1fr}.layout{grid-template-columns:1fr}.side{position:relative;height:auto}}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <h1>🐳 Docker Compose Simulator — Easy Mode</h1>
+  <p>เวอร์ชันนี้ทำสำหรับคนเริ่มจากศูนย์: ค่อย ๆ ดูว่าแต่ละไฟล์มีไว้ทำอะไร กดคำสั่งแล้วเกิดอะไร และหลังรันเสร็จควรเห็นผลลัพธ์แบบไหน</p>
+</header>
+<div class="layout">
+  <aside class="side">
+    <h3>เรียนตามลำดับ</h3>
+    <button class="nav active" onclick="go('start',this)">1. ภาพรวมง่าย ๆ<small>Docker คืออะไรแบบภาษาคน</small></button>
+    <button class="nav" onclick="go('files',this)">2. ไฟล์ในโปรเจกต์<small>package, Dockerfile, compose</small></button>
+    <button class="nav" onclick="go('dockerfile',this)">3. Dockerfile<small>สูตรสร้างกล่อง API</small></button>
+    <button class="nav" onclick="go('compose',this)">4. docker-compose.yml<small>ปุ่มเปิดหลายกล่องพร้อมกัน</small></button>
+    <button class="nav" onclick="go('dbs',this)">5. เลือกฐานข้อมูล<small>Mongo, Postgres, MySQL, Redis</small></button>
+    <button class="nav" onclick="go('terminal',this)">6. Terminal Lab<small>พิมพ์คำสั่งเองได้</small></button>
+    <button class="nav" onclick="go('editor',this)">7. Editor Lab<small>ลองแก้ Dockerfile/Compose เอง</small></button>
+    <button class="nav" onclick="go('result',this)">8. ผลลัพธ์หลังรัน<small>เว็บ, API, DB พร้อมใช้งาน</small></button>
+    <button class="nav" onclick="go('problems',this)">9. ปัญหาที่เจอบ่อย<small>port ซ้ำ, DB ต่อไม่ได้</small></button>
+    <button class="nav" onclick="go('cheatsheet',this)">10. Cheat Sheet<small>คำสั่ง Docker ที่จำเป็น</small></button>
+    <button class="nav" onclick="go('quiz',this)">11. ทบทวน<small>เช็กความเข้าใจ</small></button>
+    <div class="status">
+      <h3>สถานะจำลอง</h3>
+      <div class="status-row"><span>Images</span><b id="sImages">0</b></div>
+      <div class="status-row"><span>Containers</span><b id="sContainers">0</b></div>
+      <div class="status-row"><span>Network</span><b id="sNetwork">ยังไม่มี</b></div>
+      <div class="status-row"><span>Database</span><b id="sDb">ยังไม่รัน</b></div>
+      <div class="status-row"><span>เว็บ</span><b id="sWeb">offline</b></div>
+    </div>
+  </aside>
+  <main class="main">
+    <section id="start" class="view active">
+      <div class="hero">
+        <h2>เริ่มจากภาพจำง่าย ๆ</h2>
+        <p>ลองคิดว่าเรามีแอป 1 ระบบที่ต้องใช้ 3 อย่าง: หน้าเว็บ, API, และฐานข้อมูล MongoDB ถ้าติดตั้งเองในเครื่องอาจวุ่นวาย Docker ช่วยจับแต่ละอย่างใส่ “กล่อง” แล้ว Docker Compose ช่วยเปิดทุกกล่องพร้อมกัน</p>
+      </div>
+      <div class="simple-grid">
+        <div class="box"><span class="emoji">📦</span><h3>Docker</h3><p>คือเครื่องมือจับแอปใส่กล่อง เพื่อให้รันเหมือนกันทุกเครื่อง</p></div>
+        <div class="box"><span class="emoji">🧾</span><h3>Dockerfile</h3><p>คือสูตรบอกว่า “กล่องนี้ต้องใส่อะไรบ้าง” เช่น Node.js, source code, dependencies</p></div>
+        <div class="box"><span class="emoji">🎛️</span><h3>Docker Compose</h3><p>คือรีโมตกดเปิดหลายกล่องพร้อมกัน เช่น frontend + api + database</p></div>
+      </div>
+      <div class="callout">ประโยคเดียวที่ควรจำ: <b>Dockerfile ใช้สร้าง image</b> ส่วน <b>docker-compose.yml ใช้รันหลาย container พร้อมกัน</b></div>
+      <div class="flow">
+        <div class="step"><b>1) เขียนโค้ด</b><span>app.js / package.json</span></div><div class="arrow">→</div>
+        <div class="step"><b>2) เขียนสูตร</b><span>Dockerfile</span></div><div class="arrow">→</div>
+        <div class="step"><b>3) สั่งเปิดระบบ</b><span>docker compose up</span></div><div class="arrow">→</div>
+        <div class="step"><b>4) เปิดเว็บ</b><span>localhost:3000</span></div>
+      </div>
+    </section>
+
+    <section id="files" class="view">
+      <div class="hero"><h2>ในโปรเจกต์ตัวอย่างมีไฟล์อะไรบ้าง?</h2><p>มือใหม่มักงงว่าไฟล์ไหนทำหน้าที่อะไร ตารางนี้คือภาพรวมแบบง่ายที่สุด</p></div>
+      <table class="mini-table">
+        <thead><tr><th>ไฟล์</th><th>หน้าที่</th><th>เปรียบเทียบง่าย ๆ</th></tr></thead>
+        <tbody>
+          <tr><td><b>package.json</b></td><td>บอกชื่อโปรเจกต์, คำสั่ง npm, และ library ที่ใช้</td><td>ใบรายการของที่ต้องซื้อ</td></tr>
+          <tr><td><b>package-lock.json</b></td><td>ล็อกเวอร์ชัน library ให้ติดตั้งเหมือนเดิมทุกเครื่อง</td><td>ใบเสร็จที่ระบุรุ่นเป๊ะ ๆ</td></tr>
+          <tr><td><b>app.js</b></td><td>โค้ด API ตัวอย่าง</td><td>ตัวแอปจริง</td></tr>
+          <tr><td><b>Dockerfile</b></td><td>สูตรสร้าง image ของ API</td><td>สูตรทำกล่องแอป</td></tr>
+          <tr><td><b>docker-compose.yml</b></td><td>บอกให้เปิด frontend, api, mongodb พร้อมกัน</td><td>รีโมตเปิดทั้งระบบ</td></tr>
+        </tbody>
+      </table>
+      <div class="split" style="margin-top:16px">
+        <div class="box"><h3>package.json ตัวอย่าง</h3><pre class="code">{
+  "name": "docker-demo-api",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}</pre></div>
+        <div class="box"><h3>อ่านยังไง?</h3><div class="explain">
+          <div class="explain-item"><b>scripts</b> คือคำสั่งลัด เช่น <code>npm start</code> จะไปเรียก <code>node app.js</code></div>
+          <div class="explain-item"><b>dependencies</b> คือของที่แอปต้องใช้ตอนรันจริง เช่น express, mongodb</div>
+          <div class="explain-item"><b>devDependencies</b> คือของที่ใช้ตอนพัฒนา เช่น nodemon</div>
+          <div class="explain-item"><b>package*.json</b> ใน Dockerfile หมายถึง copy ทั้ง <code>package.json</code> และ <code>package-lock.json</code></div>
+        </div></div>
+      </div>
+    </section>
+
+    <section id="dockerfile" class="view">
+      <div class="hero"><h2>Dockerfile = สูตรสร้างกล่อง API</h2><p>Docker จะอ่านไฟล์นี้จากบนลงล่าง แล้วสร้าง image ออกมา เหมือนทำอาหารตามสูตรทีละขั้น</p></div>
+      <div class="split">
+        <pre class="code"># 1) เริ่มจากกล่องที่มี Node.js ให้แล้ว
+FROM node:20-alpine
+
+# 2) เข้าไปทำงานในโฟลเดอร์ /app
+WORKDIR /app
+
+# 3) เอาไฟล์รายชื่อ package เข้าไปก่อน
+COPY package*.json ./
+
+# 4) ติดตั้ง package ตาม package-lock.json
+RUN npm ci
+
+# 5) เอาโค้ดทั้งหมดเข้าไปในกล่อง
+COPY . .
+
+# 6) บอกว่า API ใช้ port 8080 ใน container
+EXPOSE 8080
+
+# 7) ตอนเปิด container ให้รันคำสั่งนี้
+CMD ["npm", "start"]</pre>
+        <div class="explain">
+          <div class="explain-item"><b>FROM</b> = เริ่มจาก image สำเร็จรูป เช่น Node.js</div>
+          <div class="explain-item"><b>WORKDIR</b> = เลือกโฟลเดอร์ทำงานใน container</div>
+          <div class="explain-item"><b>COPY package*.json ./</b> = เอา package file เข้าไปก่อน เพื่อให้ Docker cache ขั้นติดตั้ง package ได้ดี</div>
+          <div class="explain-item"><b>RUN npm ci</b> = ติดตั้ง dependencies ตอน build image</div>
+          <div class="explain-item"><b>COPY . .</b> = copy code ทั้งโปรเจกต์เข้าไป</div>
+          <div class="explain-item"><b>EXPOSE</b> = บอก port ภายใน container ยังไม่ใช่ port ที่เปิดบนเครื่องเรา</div>
+          <div class="explain-item"><b>CMD</b> = คำสั่งเริ่มต้นตอน container ทำงาน</div>
+        </div>
+      </div>
+      <div class="callout amber">จำง่าย ๆ: <b>RUN</b> ทำตอนสร้าง image, ส่วน <b>CMD</b> ทำตอนเปิด container</div>
+    </section>
+
+    <section id="compose" class="view">
+      <div class="hero"><h2>docker-compose.yml = รีโมตเปิดทั้งระบบ</h2><p>ไฟล์นี้บอก Docker ว่าระบบเรามีกี่กล่อง แต่ละกล่องชื่ออะไร เปิด port ไหน และคุยกันยังไง</p></div>
+      <div class="split">
+        <pre class="code" id="composeCode">services:
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    ports:
+      - "8080:8080"
+    environment:
+      MONGO_URL: mongodb://mongodb:27017/demo
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:</pre>
+        <div class="explain">
+          <div class="explain-item"><b>services</b> = รายชื่อกล่องทั้งหมดในระบบ</div>
+          <div class="explain-item"><b>frontend</b> = กล่องหน้าเว็บ เปิดให้เราเข้าผ่าน <code>localhost:3000</code></div>
+          <div class="explain-item"><b>api</b> = กล่อง backend build จากโฟลเดอร์ <code>./api</code></div>
+          <div class="explain-item"><b>database service</b> = กล่องฐานข้อมูล อาจเป็น MongoDB, PostgreSQL, MySQL หรือ Redis ก็ได้</div>
+          <div class="explain-item"><b>ports "3000:80"</b> = ซ้ายคือ port เครื่องเรา ขวาคือ port ใน container</div>
+          <div class="explain-item"><b>environment</b> = ส่งค่าตั้งค่าเข้า container เช่น URL, username, password หรือชื่อ database</div>
+          <div class="explain-item"><b>volumes</b> = เก็บข้อมูล DB ให้ไม่หายเมื่อปิด container</div>
+        </div>
+      </div>
+      <div class="callout">จุดสำคัญ: ใน Compose container คุยกันด้วย <b>ชื่อ service</b> เช่น <code>mongodb</code>, <code>postgres</code>, <code>mysql</code> หรือ <code>redis</code> ไม่ใช่ localhost</div>
+    </section>
+
+
+    <section id="dbs" class="view">
+      <div class="hero"><h2>เลือกฐานข้อมูลที่อยากจำลอง</h2><p>Docker Compose ไม่ได้ใช้ได้แค่ MongoDB เท่านั้น เราสามารถเปลี่ยน “กล่องฐานข้อมูล” เป็นตัวอื่นได้ โดยหลัก ๆ เปลี่ยนแค่ service ของ database และ connection string ที่ API ใช้ต่อเข้าไป</p></div>
+      <div class="db-tabs">
+        <button class="db-choice active" onclick="selectDb('mongo',this)"><b>MongoDB</b><span>NoSQL document DB</span></button>
+        <button class="db-choice" onclick="selectDb('postgres',this)"><b>PostgreSQL</b><span>SQL database ยอดนิยม</span></button>
+        <button class="db-choice" onclick="selectDb('mysql',this)"><b>MySQL</b><span>SQL database ที่เจอบ่อย</span></button>
+        <button class="db-choice" onclick="selectDb('redis',this)"><b>Redis</b><span>Cache / key-value store</span></button>
+      </div>
+      <div class="split">
+        <pre class="code" id="dbComposeCode"></pre>
+        <div class="explain" id="dbExplain"></div>
+      </div>
+      <div class="callout amber">จำง่าย ๆ: ถ้าเปลี่ยน DB ให้ดู 4 จุดนี้เสมอ — <b>image</b>, <b>ports</b>, <b>environment</b>, และ <b>volumes</b>. ส่วน API ต้องเปลี่ยน connection string ให้ตรงกับ service name ของ DB นั้น ๆ</div>
+    </section>
+
+    <section id="terminal" class="view">
+      <div class="hero"><h2>Terminal Lab: ลองพิมพ์คำสั่งเอง</h2><p>หน้านี้แยกไว้สำหรับทดลองคำสั่ง Docker โดยเฉพาะ พิมพ์คำสั่งลงช่องด้านล่างแล้วกด Enter หรือปุ่ม Run ระบบจะจำลองผลลัพธ์ตามสถานะปัจจุบัน เช่น ถ้ายังไม่ได้ <code>compose up</code> แล้วสั่ง <code>ps</code> จะเห็นว่าไม่มี container กำลังรัน</p></div>
+
+      <div class="term-input-wrap">
+        <span class="prompt-badge">$</span>
+        <input id="commandInput" class="cmd-input" value="docker compose up -d --build" placeholder="ลองพิมพ์ เช่น docker compose ps" onkeydown="if(event.key==='Enter')runCustomCommand()">
+        <button class="btn green" onclick="runCustomCommand()">Run</button>
+        <button class="btn dark" onclick="clearTerminal()">Clear</button>
+      </div>
+
+      <div class="hint-row">
+        <button class="hint-chip" onclick="useCmd('docker compose up -d --build')">up -d --build</button>
+        <button class="hint-chip" onclick="useCmd('docker compose ps')">ps</button>
+        <button class="hint-chip" onclick="useCmd('docker compose config')">config</button>
+        <button class="hint-chip" onclick="useCmd('docker compose config --services')">services</button>
+          <button class="hint-chip" onclick="useCmd('docker compose stop api')">stop api</button>
+        <button class="hint-chip" onclick="useCmd('docker stop dockerlab-api-1')">docker stop container</button>
+          <button class="hint-chip" onclick="useCmd('docker compose stop db')">stop db</button>
+          <button class="hint-chip" onclick="useCmd('docker compose start api')">start api</button>
+        <button class="hint-chip" onclick="useCmd('docker compose logs api')">logs api</button>
+        <button class="hint-chip" onclick="useCmd('docker compose down')">down</button>
+        <button class="hint-chip" onclick="useCmd('docker compose down -v')">down -v</button>
+        <button class="hint-chip" onclick="useCmd('docker images')">images</button>
+        <button class="hint-chip" onclick="useCmd('docker ps -a')">ps -a</button>
+        <button class="hint-chip" onclick="useCmd('clear')">clear</button>
+      </div>
+
+      <div class="terminal"><div class="terminal-head" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Terminal Simulator</span><button class="btn dark" style="padding:6px 10px;font-size:12px" onclick="clearTerminal()">Clear</button></div><div class="terminal-body" id="terminalText">$ พร้อมใช้งาน
+พิมพ์คำสั่งเอง หรือกดคำสั่งตัวอย่างด้านบนได้เลย</div></div>
+
+      <div class="split" style="margin-top:16px">
+        <div class="lab-note"><h3>หน้านี้จำลองอะไร?</h3><p>จำลองคำสั่งที่มือใหม่ใช้บ่อย เช่น เปิดระบบ, ดูสถานะ, ดู log, ปิดระบบ, ลบ volume และดู image/container</p></div>
+        <div class="lab-note"><h3><code>docker images</code> ใช้ทำอะไร?</h3><p>ใช้ดู <b>image</b> ที่อยู่ในเครื่องเรา เปรียบเหมือน “แม่พิมพ์/ต้นแบบ” ที่ Docker ใช้สร้าง container ถ้า image เยอะมาก เครื่องอาจกินพื้นที่เพิ่มได้</p></div>
+      </div>
+      <div class="callout" style="margin-top:12px"><b>จำง่าย:</b> <code>image</code> = ต้นแบบ, <code>container</code> = กล่องที่กำลังถูกเปิดใช้งานจริง</div>
+    </section>
+
+
+
+    <section id="editor" class="view">
+      <div class="hero">
+        <h2>Editor Lab: ลองแก้ไฟล์เอง แล้วให้ระบบตรวจ error</h2>
+        <p>หน้านี้จำลองการทำงานจริงมากขึ้น: แก้ <code>package.json</code>, <code>Dockerfile</code>, และ <code>docker-compose.yml</code> ได้เอง แล้วกด Validate หรือ Run เพื่อดูว่า config ถูกไหม ถ้าผิดจะแสดง error แบบภาษามือใหม่</p>
+      </div>
+
+      <div class="editor-actions">
+        <button class="btn green" onclick="runEditorCompose()">Run: docker compose up -d --build</button>
+        <button class="btn primary" onclick="validateEditorFiles(true)">Validate only</button>
+        <button class="btn dark" onclick="resetEditorDefaults()">Reset ตัวอย่าง</button>
+        <button class="btn dark" onclick="loadBrokenExample()">ใส่ตัวอย่างที่ผิดให้ลองแก้</button>
+        <button class="btn dark" onclick="clearEditorTerminal()">Clear terminal</button>
+        <button class="btn primary" onclick="copyEditorBundle()">Copy ทุกไฟล์</button>
+        <button class="btn dark" onclick="downloadEditorFile('composeEditor','docker-compose.yml')">Download compose</button>
+      </div>
+
+      <div class="callout amber">
+        วิธีเล่น: ลองลบ <span class="mini-kbd">FROM</span> ใน Dockerfile หรือเปลี่ยน <span class="mini-kbd">depends_on: - mongodb</span> เป็นชื่อที่ไม่มีอยู่ แล้วกด Run จะเห็น error จำลองเหมือนตอนใช้ Docker จริง
+      </div>
+
+      <div class="editor-grid">
+        <div class="editor-card">
+          <div class="editor-head"><div><b>package.json</b><small>ชื่อโปรเจกต์ + npm scripts + dependencies</small></div><div class="mini-actions"><button class="btn dark mini" onclick="copyEditorValue('pkgEditor')">Copy</button><button class="btn dark mini" onclick="downloadEditorFile('pkgEditor','package.json')">Download</button></div></div>
+          <textarea id="pkgEditor" class="editor-area short" spellcheck="false"></textarea>
+        </div>
+
+        <div class="editor-card">
+          <div class="editor-head"><div><b>Dockerfile</b><small>สูตร build image ของ API</small></div><div class="mini-actions"><button class="btn dark mini" onclick="copyEditorValue('dockerfileEditor')">Copy</button><button class="btn dark mini" onclick="downloadEditorFile('dockerfileEditor','Dockerfile')">Download</button></div></div>
+          <textarea id="dockerfileEditor" class="editor-area short" spellcheck="false"></textarea>
+        </div>
+
+        <div class="editor-card full-row">
+          <div class="editor-head"><div><b>docker-compose.yml</b><small>กำหนด services, ports, environment, volumes</small></div><div class="mini-actions"><button class="btn dark mini" onclick="copyEditorValue('composeEditor')">Copy</button><button class="btn dark mini" onclick="downloadEditorFile('composeEditor','docker-compose.yml')">Download</button></div></div>
+          <textarea id="composeEditor" class="editor-area" spellcheck="false"></textarea>
+        </div>
+
+        <div class="validation-panel">
+          <h3>ผลการตรวจไฟล์</h3>
+          <div id="validationResult" class="tiny" style="margin-top:8px">ยังไม่ได้ตรวจ กด <b>Validate only</b> หรือ <b>Run</b> เพื่อเริ่มตรวจ</div>
+        </div>
+
+        <div class="terminal editor-terminal">
+          <div class="terminal-head" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Editor Terminal</span><button class="btn dark" style="padding:6px 10px;font-size:12px" onclick="clearEditorTerminal()">Clear</button></div>
+          <div class="terminal-body editor-terminal" id="editorTerminalText">$ พร้อมใช้งาน
+ลองแก้ไฟล์ แล้วกด Run ได้เลย</div>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:16px">
+        หมายเหตุ: นี่เป็น validator แบบจำลองใน browser ไม่ได้รัน Docker จริง แต่ตั้งใจให้ error ใกล้เคียงสิ่งที่มือใหม่เจอบ่อย เช่น YAML ผิด, service หาย, port ซ้ำ, Dockerfile ไม่มี FROM หรือ package.json ไม่ถูกต้อง
+      </div>
+    </section>
+
+    <section id="result" class="view">
+      <div class="hero"><h2>หลังรันสำเร็จ หน้าตาควรเป็นแบบนี้</h2><p>ถ้า Compose up ผ่าน จะมี container หลายตัวกำลัง running และเปิดเว็บผ่าน localhost ได้</p></div>
+      <div class="cards" id="serviceCards"></div>
+      <div class="split" style="margin-top:16px">
+        <div class="screen">
+          <div class="browserbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><div class="url">http://localhost:3000</div></div>
+          <div class="page" id="webPage"><h2>Docker Demo App</h2><p>ยังไม่ได้รันระบบ ไปที่เมนู “ลองกดคำสั่ง” แล้วกด compose up</p></div>
+        </div>
+        <div class="box"><h3>API Health Check</h3><p>เมื่อ API ต่อฐานข้อมูลสำเร็จ เราจะเห็น response แบบนี้</p><div class="api" id="apiBox">GET http://localhost:8080/health
+
+{ "status": "offline" }</div></div>
+      </div>
+    </section>
+
+    <section id="problems" class="view">
+      <div class="hero"><h2>ปัญหาที่มือใหม่เจอบ่อย</h2><p>ส่วนนี้ช่วยอ่าน error แบบไม่ตกใจ แล้วรู้ว่าต้องแก้ตรงไหน</p></div>
+      <div class="cards">
+        <div class="box"><h3>❌ port is already allocated</h3><p>แปลว่า port นี้มีโปรแกรมอื่นใช้อยู่ เช่น 3000 ซ้ำ</p><div class="callout red">แก้: เปลี่ยนซ้ายมือใน ports เช่น <code>"3001:80"</code></div></div>
+        <div class="box"><h3>❌ API ต่อ DB ไม่ได้</h3><p>ใน container ห้ามใช้ <code>localhost</code> เพื่อเรียก DB อีก container</p><div class="callout red">แก้: ใช้ชื่อ service เช่น <code>mongodb</code>, <code>postgres</code>, <code>mysql</code> หรือ <code>redis</code> ตามชื่อใน compose</div></div>
+        <div class="box"><h3>❌ npm install failed</h3><p>อาจเกิดจาก package-lock ไม่ตรง หรือ package มีปัญหา</p><div class="callout red">แก้: เช็ก <code>package.json</code>, <code>package-lock.json</code> แล้วลอง build ใหม่</div></div>
+        <div class="box"><h3>❌ แก้โค้ดแล้วไม่เปลี่ยน</h3><p>image เก่าอาจยังถูกใช้ หรือไม่ได้ mount volume สำหรับ dev</p><div class="callout red">แก้: รัน <code>docker compose up -d --build</code> ใหม่</div></div>
+      </div>
+    </section>
+
+
+    <section id="cheatsheet" class="view">
+      <div class="hero">
+        <h2>Cheat Sheet: กดเปิดอ่านทีละคำสั่ง</h2>
+        <p>หน้านี้พับเก็บไว้ก่อนเพื่อไม่ให้รก อยากรู้คำสั่งไหนก็กดเปิดอ่านเฉพาะอันนั้นได้เลย</p>
+      </div>
+
+      <h3 class="acc-section">🚀 เริ่ม/หยุดระบบ</h3>
+      <div class="accordion">
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>เปิดทั้งระบบ</b><small>รันทุก service และดู log สด</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose up</code><p>อ่านไฟล์ <b>docker-compose.yml</b> แล้วเปิดทุก service เช่น frontend, api, database พร้อมแสดง log บน terminal</p><div class="when">ใช้เมื่อ: อยากเห็น log สด ๆ ระหว่างระบบกำลังเปิด</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>เปิดแบบรันหลังบ้าน</b><small>เปิดแล้วคืน terminal ให้ใช้งานต่อ</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose up -d</code><p><b>-d</b> คือ detached mode เปิด container ทิ้งไว้ด้านหลัง ไม่ล็อกหน้าจอ terminal</p><div class="when">ใช้เมื่อ: อยากเปิดระบบทิ้งไว้ แล้วพิมพ์คำสั่งอื่นต่อ</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>เปิดและ build ใหม่</b><small>คำสั่งที่ใช้บ่อยมากหลังแก้ Dockerfile/package</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose up -d --build</code><p>สั่ง build image ใหม่ก่อนเปิด container เหมาะหลังแก้ <b>Dockerfile</b>, <b>package.json</b> หรือ dependencies</p><div class="when">ใช้เมื่อ: แก้ไฟล์สำคัญแล้วอยากให้ Docker สร้าง image ใหม่</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>หยุดและลบ container</b><small>ข้อมูลใน volume ยังไม่หาย</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose down</code><p>ปิด container และลบ network ที่ Compose สร้าง แต่โดยปกติ <b>volume ยังอยู่</b> ข้อมูล DB จึงยังไม่หาย</p><div class="when">ใช้เมื่อ: เลิกใช้งานระบบชั่วคราว</div></div></div>
+      </div>
+
+      <h3 class="acc-section">🔎 ตรวจสอบสถานะและดูอาการ</h3>
+      <div class="accordion">
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ดู container ใน compose</b><small>ดูว่า service ไหน running/stopped</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose ps</code><p>ดูสถานะ container ในโปรเจกต์นี้ และดู port mapping เช่น <code>3000-&gt;80</code></p><div class="when">ใช้เมื่อ: อยากเช็กว่าระบบติดจริงไหม</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ตรวจไฟล์ compose</b><small>ดูว่า Compose อ่าน config ผ่านไหม</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose config</code><p>ให้ Docker Compose อ่านไฟล์แล้วแสดง config ที่ถูกแปลงเรียบร้อย ถ้า YAML ผิดหรืออ้าง service ผิด มักเห็น error ก่อน up จริง</p><div class="when">ใช้เมื่อ: อยากตรวจ config ก่อนรันระบบ</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ดู service names</b><small>ชื่อที่ใช้กับ stop/logs/start</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose config --services</code><p>แสดงรายชื่อ service ที่อยู่ใต้ <code>services:</code> เช่น frontend, api, mongodb ชื่อเหล่านี้คือชื่อที่ใช้กับคำสั่ง Compose</p><div class="when">ใช้เมื่อ: ไม่แน่ใจว่าต้อง stop/logs ด้วยชื่ออะไร</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ดู log ทั้งหมด</b><small>อ่านข้อความจากทุก service</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose logs</code><p>แสดง log จากทุก service ใน compose ใช้ดูภาพรวมว่ามี service ไหน error</p><div class="when">ใช้เมื่อ: ระบบเปิดไม่ติด แต่ยังไม่รู้ว่าพังตรงไหน</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ดู log เฉพาะ API</b><small>เช็กว่า API ต่อ DB ได้ไหม</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose logs api</code><p>ดู log เฉพาะ service ชื่อ <b>api</b> ถ้า database มีปัญหา มักเห็น error จากตรงนี้</p><div class="when">ใช้เมื่อ: API เปิดไม่ติดหรือต่อ DB ไม่ได้</div></div></div>
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>ดู log แบบไหลต่อเนื่อง</b><small>เห็น log ใหม่ทันที</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose logs -f api</code><p><b>-f</b> คือ follow ดู log ต่อเนื่องเหมือน tail</p><div class="when">ใช้เมื่อ: กำลัง debug และอยากเห็น log ใหม่ทันที</div></div></div>
+      </div>
+
+      <h3 class="acc-section">🧹 ล้าง/เริ่มใหม่</h3>
+      <div class="accordion">
+        <div class="acc-item"><button class="acc-head" onclick="toggleAcc(this)"><span><b>หยุด service แต่ไม่ลบ</b><small>พัก container ไว้ก่อน</small></span><span class="acc-arrow">▶</span></button><div class="acc-body"><code class="cheat-code">docker compose stop</code><p>หยุด container ทั้งหมดไว้เฉย ๆ ยังไม่ลบ container และ volume ยังอยู่</p><div class="when">ใช้เมื่อ: อยากพักระบบทั้งชุดไว้ก่อน แล้วอาจกลับมา start ต่อ</div></div></div>
+        <div class="acc-item"><button class="acc-head" oncli... (52 KB left)
